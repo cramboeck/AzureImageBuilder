@@ -1,0 +1,18 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "location": {
+        "value": "westeurope"
+      },
+      "galleryId": {
+        "value": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/<your-rg>/providers/Microsoft.Compute/galleries/<your-gallery>"
+      },
+      "imageTemplateName": {
+        "value": "ZSD-Base_OS-Layer0"
+      },
+      "identityResourceId": {
+        "value": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/<your-rg>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ZSD-AVD-AIB"
+      }
+    }
+  }

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "packagesCsvUrl": {
+      "type": "string",
+      "defaultValue": "https://<dein-storage>.blob.core.windows.net/packages/avd.csv",
+      "metadata": {
+        "description": "URL zur CSV-Datei mit Paketliste"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.VirtualMachineImages/imageTemplates",
+      "apiVersion": "2022-07-01",
+      "name": "modular-image-builder-template",
+      "location": "westeurope",
+      "properties": {
+        "buildTimeoutInMinutes": 80,
+        "vmProfile": {
+          "vmSize": "Standard_D2s_v3",
+          "osDiskSizeGB": 128
+        },
+        "source": {
+          "type": "PlatformImage",
+          "publisher": "MicrosoftWindowsDesktop",
+          "offer": "office-365",
+          "sku": "win11-22h2-avd",
+          "version": "latest"
+        },
+        "customize": [
+          {
+            "type": "file",
+            "name": "DownloadInstallerScript",
+            "sourceUri": "https://<dein-storage>.blob.core.windows.net/scripts/install-software.ps1",
+            "destination": "install-software.ps1"
+          },
+          {
+            "type": "PowerShell",
+            "name": "RunInstallerScript",
+            "inline": [
+              "param([string]$url)",
+              ".\\install-software.ps1 -csvUrl $url"
+            ],
+            "runElevated": true,
+            "validExitCodes": [0],
+            "parameters": [
+              "[parameters('packagesCsvUrl')]"
+            ]
+          }
+        ],
+        "distribute": [
+          {
+            "type": "SharedImage",
+            "galleryImageId": "/subscriptions/<subscriptionId>/resourceGroups/<rg>/providers/Microsoft.Compute/galleries/<galleryName>/images/<imageDefName>",
+            "runOutputName": "imageOutput",
+            "replicationRegions": [
+              "westeurope"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
